@@ -12,8 +12,6 @@ def FonctionQuiFaitTout(data):
     sum_harm = 0
     sum_std = 0
 
-
-
     for i in range(len(data[1])):
         sum_arith = sum_arith + data[1][i]*data[2][i]
         sum_carre = sum_carre + data[1][i]*data[1][i]*data[2][i]
