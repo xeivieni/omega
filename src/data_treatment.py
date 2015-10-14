@@ -3,50 +3,6 @@ import os
 import numpy
 import math
 
-# @ JO : What is data ?
-def averages(data):
-    """ This function computes all the different types of averages as well as the standard deviation.
-    :param data:
-    :return: mean_arith: The arithmetic average
-             mean_quad: The quadratic average
-             mean_geo: The geometric average
-             mean_harm: The harmonic average
-             std: The standard deviation along the arithmetic average (ecart type)
-    """
-    min = numpy.min(data[1])
-    max = numpy.max(data[1])
-    sum_arith = 0
-    sum_carre = 0
-    sum_ln = 0
-    sum_harm = 0
-    sum_std = 0
-
-    for i in range(len(data[1])):
-        sum_arith = sum_arith + data[1][i] * data[2][i]
-        sum_carre = sum_carre + data[1][i] * data[1][i] * data[2][i]
-        sum_ln = sum_ln + numpy.log(data[1][i]) * data[2][i]
-        sum_harm = sum_harm + (data[2][i] / data[1][i])
-
-    mean_arith = sum_arith / data[0]
-    mean_quad = numpy.sqrt(sum_carre / data[0])
-    mean_geo = numpy.exp(sum_ln / data[0])
-    mean_harm = 1 / (sum_harm / data[0])
-
-    for j in range(len(data[1])):
-        sum_std += abs(data[1][j] - mean_arith) * data[2][j]
-
-    std = sum_std / data[0]
-
-    print('Min = %f \n' % min)
-    print('Max = %f \n' % max)
-    print('Moyenne arithmetique = %.3f' % mean_arith)
-    print('Moyenne quadratique = %.3f' % mean_quad)
-    print('Moyenne geometrique = %.3f' % mean_geo)
-    print('Moyenne harmonique = %.3f\n' % mean_harm)
-    print('Ecart type = %.3f\n' % std)
-
-    return mean_arith, mean_quad, mean_geo, mean_harm, std
-
 
 def moments(data):
     ##########################################################################################
@@ -124,9 +80,16 @@ class Calculator(object):
         print "Ecart a la moyenne", self.std
         print "Valeure maximale", self.max
         print "Valeurs minimale", self.min
-        print "Valeurs minimale", self.var
-        print "Valeurs minimale", self.moments
-        print "Valeurs minimale", self.dissym
+        print "Variance", self.var
+        print "Moment d'ordre R (defaut 1)", self.momentsR
+        print "Moment centre d'ordre R (default 1)", self.centralMomentsR
+        print "Dissymetrie", self.dissym
+
+    def average(self, data, number):
+        return numpy.sum(data)/number
+
+    def moments(self, data, occurrence, order):
+        return self.average([occurrence[i]*(data[i]**order) for i in range(len(data))], len(data))
 
         #TODO : Create average functions in parent class and manipulated data in children
 
@@ -139,39 +102,19 @@ class NonGroupedDiscrete(Calculator):
         self.nbLines = n
         self.data = d
 
-    def arithmetic_average(self):
-        self.arithAvg = numpy.mean(self.data)
-        print "moyenne arithmetique discrete non groupee = ", self.arithAvg
-
-    def quadratic_average(self):
-        square_data = [i * i for i in self.data]
-        self.quadAvg = math.sqrt(numpy.mean(square_data))
-        print "moyenne quadratique discrete non groupee = ", self.quadAvg
-
-    def geometrical_average(self):
-        log_data = [numpy.log(i) for i in self.data]
-        self.geoAvg = math.exp(numpy.mean(log_data))
-        print "moyenne geometrique discrete non groupee = ", self.geoAvg
-
-    def harmonic_average(self):
-        harm_data = [(1 / self.data[i]) for i in range(len(self.data))]
-        self.harmAvg = 1 / (numpy.mean(harm_data))
-        print "moyenne harmonique discrete non groupee = ", self.harmAvg
+    def run(self):
+        self.arithAvg = self.average(self.data, self.nbLines)
+        self.quadAvg = math.sqrt(self.average([i * i for i in self.data], self.nbLines))
+        self.geoAvg = math.exp(self.average([numpy.log(i) for i in self.data], self.nbLines))
+        self.harmAvg = 1/self.average([(1 / self.data[i]) for i in range(len(self.data))], self.nbLines)
+        self.max = numpy.max(self.data)
+        self.min = numpy.min(self.data)
+        self.momentsR.append(self.moments(self.data, [1 for i in range(len(self.data))], 1))
 
     def standard_deviation(self):
         dev_data = [abs(i - self.arithAvg) for i in self.data]
         self.std = numpy.sum(dev_data) / self.nbLines
         print "Ecart a la moyenne arithmetique discrete non groupee = ", self.std
-
-    def extremes(self):
-        self.max = numpy.max(self.data)
-        self.min = numpy.min(self.data)
-        print "Minimum = %f\nMaximum = %f" % (self.min, self.max)
-
-    def moments(self, r):
-        for i in range(r):
-            self.momentsR.append(sum([j**(i+1) for j in self.data])/self.nbLines)
-            print "Moment d'ordre %f = %f" %(i+1, self.momentsR[i])
 
     def central_moments(self, r):
         if self.momentsR==[]:
@@ -191,41 +134,22 @@ class GroupedDiscrete(Calculator):
         self.occurrences = e
         self.totalOccurrences = s
 
-    def arithmetic_average(self):
-        occurrences_data = [(self.data[i]) * self.occurrences[i] for i in range(len(self.data))]
-        self.arithAvg = numpy.sum(occurrences_data) / self.totalOccurrences
-        print "moyenne arithmetique discrete groupee = ", self.arithAvg
-
-    def quadratic_average(self):
-        square_data = [(self.data[i] * self.data[i]) * self.occurrences[i] for i in range(len(self.data))]
-        self.quadAvg = math.sqrt(numpy.sum(square_data) / self.totalOccurrences)
-        print "moyenne quadratique discrete groupee = ", self.quadAvg
-
-    def geometrical_average(self):
-        log_data = [numpy.log(self.data[i]) * self.occurrences[i] for i in range(len(self.data))]
-        self.geoAvg = math.exp(numpy.sum(log_data) / self.totalOccurrences)
-        print "moyenne geometrique discrete groupee = ", self.geoAvg
-
-    def harmonic_average(self):
-        harm_data = [(self.occurrences[i] / self.data[i]) for i in range(len(self.data))]
-        self.harmAvg = 1 / (numpy.sum(harm_data) / self.totalOccurrences)
-        print "moyenne harmonique discrete groupee = ", self.harmAvg
+    def run(self):
+        self.arithAvg = self.average([self.data[i]*self.occurrences[i] for i in range(len(self.data))],
+                                     self.totalOccurrences)
+        self.quadAvg = math.sqrt(self.average([(self.data[i] * self.data[i]) * self.occurrences[i] for i in range(len(self.data))],
+                                              self.totalOccurrences))
+        self.geoAvg = math.exp(self.average([numpy.log(self.data[i]) * self.occurrences[i] for i in range(len(self.data))], self.totalOccurrences))
+        self.harmAvg = 1/self.average([(self.occurrences[i] / self.data[i]) for i in range(len(self.data))],
+                                      self.totalOccurrences)
+        self.max = numpy.max(self.data)
+        self.min = numpy.min(self.data)
+        self.momentsR.append(self.moments(self.data, self.occurrences, 1))
 
     def standard_deviation(self):
         dev_data = [self.occurrences[i] * abs(self.data[i] - self.arithAvg) for i in range(len(self.data))]
         self.std = numpy.sum(dev_data) / self.totalOccurrences
         print "Ecart a la moyenne arithmetique discrete groupee = ", self.std
-
-    def extremes(self):
-        self.max = numpy.max(self.data)
-        self.min = numpy.min(self.data)
-        print "Minimum = %f\nMaximum = %f" % (self.min, self.max)
-
-    def moments(self, r):
-        for i in range(r):
-            self.momentsR.append(sum([self.occurrences[j]*(self.data[j]**(i+1))
-                                      for j in range(len(self.data))])/self.totalOccurrences)
-            print "Moment d'ordre %f = %f" %(i+1, self.momentsR[i])
 
     def central_moments(self, r):
         if self.momentsR==[]:
@@ -245,40 +169,19 @@ class NonGroupedContinuous(Calculator):
         self.nbLines = n
         self.data = d
 
-    def arithmetic_average(self):
-        print " were here"
-        self.arithAvg = numpy.mean(self.data)
-        print "moyenne arithmetique continues non groupees = ", self.arithAvg
-
-    def quadratic_average(self):
-        square_data = [i * i for i in self.data]
-        self.quadAvg = math.sqrt(numpy.mean(square_data))
-        print "moyenne quadratique continues non groupees = ", self.quadAvg
-
-    def geometrical_average(self):
-        log_data = [numpy.log(i) for i in self.data]
-        self.geoAvg = math.exp(numpy.mean(log_data))
-        print "moyenne geometrique continues non groupee = ", self.geoAvg
-
-    def harmonic_average(self):
-        harm_data = [1 / self.data[i] for i in range(len(self.data))]
-        self.harmAvg = 1 / (numpy.mean(harm_data))
-        print "moyenne harmonique continues non groupee = ", self.harmAvg
+    def run(self):
+        self.arithAvg = self.average(self.data, self.nbLines)
+        self.quadAvg = math.sqrt(self.average([i * i for i in self.data], self.nbLines))
+        self.geoAvg = math.exp(self.average([numpy.log(i) for i in self.data], self.nbLines))
+        self.harmAvg = 1/self.average([(1 / self.data[i]) for i in range(len(self.data))], self.nbLines)
+        self.max = numpy.max(self.data)
+        self.min = numpy.min(self.data)
+        self.momentsR.append(self.moments(self.data, [1 for i in range(len(self.data))], 1))
 
     def standard_deviation(self):
         dev_data = [abs(i - self.arithAvg) for i in self.data]
         self.std = numpy.sum(dev_data) / self.nbLines
         print "Ecart a la moyenne arithmetique continues non groupee = ", self.std
-
-    def extremes(self):
-        self.max = numpy.max(self.data)
-        self.min = numpy.min(self.data)
-        print "Minimum = %f\nMaximum = %f" % (self.min, self.max)
-
-    def moments(self, r):
-        for i in range(r):
-            self.momentsR.append(sum([j**(i+1) for j in self.data])/self.nbLines)
-            print "Moment d'ordre %f = %f" %(i+1, self.momentsR[i])
 
     def central_moments(self, r):
         if self.momentsR==[]:
@@ -300,41 +203,23 @@ class GroupedContinuous(Calculator):
         self.centers = [(self.lowerBounds[i] + self.higherBounds[i]) / 2 for i in range(len(self.lowerBounds))]
         self.occurrences = e
 
-    def arithmetic_average(self):
-        values = [self.centers[i] * self.occurrences[i] for i in range(len(self.centers))]
-        self.arithAvg = numpy.sum(values) / numpy.sum(self.occurrences)
-        print "moyenne arithmetique continues groupees = ", self.arithAvg
+    def run(self):
+        self.arithAvg = self.average([self.centers[i] * self.occurrences[i] for i in range(len(self.centers))],
+                                     sum(self.occurrences))
+        self.quadAvg = math.sqrt(self.average([(self.centers[i] * self.centers[i]) * self.occurrences[i] for i in range(len(self.centers))],
+                                              sum(self.occurrences)))
 
-    def quadratic_average(self):
-        square_values = [(self.centers[i] * self.centers[i]) * self.occurrences[i] for i in range(len(self.centers))]
-        self.quadAvg = math.sqrt(numpy.sum(square_values) / numpy.sum(self.occurrences))
-        print "moyenne quadratique continues groupees = ", self.quadAvg
-
-    def geometrical_average(self):
-        log_data = [numpy.log(self.centers[i]) * self.occurrences[i] for i in range(len(self.centers))]
-        self.geoAvg = math.exp(numpy.sum(log_data) / numpy.sum(self.occurrences))
-        print "moyenne geometrique continues groupee = ", self.geoAvg
-
-    def harmonic_average(self):
-        harm_data = [(self.occurrences[i] / self.centers[i]) for i in range(len(self.centers))]
-        self.harmAvg = 1 / (numpy.sum(harm_data) / numpy.sum(self.occurrences))
-        print "moyenne harmonique discrete groupee = ", self.harmAvg
+        self.geoAvg = math.exp(self.average([numpy.log(self.centers[i]) * self.occurrences[i] for i in range(len(self.centers))], sum(self.occurrences)))
+        self.harmAvg = 1/self.average([(self.occurrences[i] / self.centers[i]) for i in range(len(self.centers))],
+                                      sum(self.occurrences))
+        self.max = numpy.max(self.centers)
+        self.min = numpy.min(self.centers)
+        self.momentsR.append(self.moments(self.centers, self.occurrences, 1))
 
     def standard_deviation(self):
         dev_data = [self.occurrences[i] * abs(self.centers[i] - self.arithAvg) for i in range(len(self.centers))]
         self.std = numpy.sum(dev_data) / numpy.sum(self.occurrences)
         print "Ecart a la moyenne arithmetique continue groupee = ", self.std
-
-    def extremes(self):
-        self.max = numpy.max(self.centers)
-        self.min = numpy.min(self.centers)
-        print "Minimum = %f\nMaximum = %f" % (self.min, self.max)
-
-    def moments(self, r):
-        for i in range(r):
-            self.momentsR.append(sum([self.occurrences[j]*(self.centers[j]**(i+1))
-                                      for j in range(len(self.centers))])/len(self.occurrences))
-            print "Moment d'ordre %f = %f" %(i+1, self.momentsR[i])
 
     def central_moments(self, r):
         if self.momentsR==[]:
