@@ -36,7 +36,7 @@ def Lecture_data(Nom_fichier):
         x_d = [float(data[i][1]) for i in range(ligne)]
         Effectifs = [int(data[i][2]) for i in range(ligne)]
         moyenne_inter = [(x_g[i] + x_d[i]) / 2 for i in range(len(x_g))]
-        return int(numpy.sum(Effectifs)), moyenne_inter, Effectifs
+        return int(numpy.sum(Effectifs)), x_g, x_d, Effectifs
 
 ### fin sous fonction
 #########################################

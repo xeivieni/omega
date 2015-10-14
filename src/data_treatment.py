@@ -121,6 +121,8 @@ class Calculator(object):
         print "Moyenne geometrique", self.geoAvg
         print "Moyenne harmonique", self.harmAvg
 
+    #TODO : Create average functions in parent class and manipulated data in children
+
 
 class NonGroupedDiscrete(Calculator):
     """Class for non grouped discrete values treatment"""
@@ -132,12 +134,22 @@ class NonGroupedDiscrete(Calculator):
 
     def arithmetic_average(self):
         self.arithAvg = numpy.mean(self.data)
-        print "moyenne arithmetique = ", self.arithAvg
+        print "moyenne arithmetique discrete non groupee = ", self.arithAvg
 
     def quadratic_average(self):
         square_data = [i*i for i in self.data]
         self.quadAvg = math.sqrt(numpy.mean(square_data))
-        print "moyenne quadratique = ", self.quadAvg
+        print "moyenne quadratique discrete non groupee = ", self.quadAvg
+
+    def geometrical_average(self):
+        log_data = [numpy.log(i) for i in self.data]
+        self.geoAvg = math.exp(numpy.mean(log_data))
+        print "moyenne geometrique discrete non groupee = ", self.geoAvg
+
+    def harmonic_average(self):
+        harm_data = [(1/self.data[i]) for i in range(len(self.data))]
+        self.harmAvg = 1/(numpy.mean(harm_data))
+        print "moyenne harmonique discrete non groupee = ", self.harmAvg
 
     
 
@@ -149,17 +161,28 @@ class GroupedDiscrete(Calculator):
         Calculator.__init__(self)
         self.data = d
         self.occurrences = e
-        self.values = [self.data[i]*self.occurrences[i] for i in range(len(self.data))]
         self.totalOccurrences = s
 
     def arithmetic_average(self):
-        self.arithAvg = numpy.sum(self.values)/self.totalOccurrences
-        print "moyenne arithmetique = ", self.arithAvg
+        occurrences_data = [(self.data[i])*self.occurrences[i] for i in range(len(self.data))]
+        self.arithAvg = numpy.sum(occurrences_data)/self.totalOccurrences
+        print "moyenne arithmetique discrete groupee = ", self.arithAvg
 
     def quadratic_average(self):
-        square_data = [i*i for i in self.values]
+        square_data = [(self.data[i]*self.data[i])*self.occurrences[i] for i in range(len(self.data))]
         self.quadAvg = math.sqrt(numpy.sum(square_data)/self.totalOccurrences)
-        print "moyenne quadratique = ", self.quadAvg
+        print "moyenne quadratique discrete groupee = ", self.quadAvg
+
+    def geometrical_average(self):
+        log_data = [numpy.log(self.data[i])*self.occurrences[i] for i in range(len(self.data))]
+        self.geoAvg = math.exp(numpy.sum(log_data)/self.totalOccurrences)
+        print "moyenne geometrique discrete groupee = ", self.geoAvg
+
+    def harmonic_average(self):
+        harm_data = [(self.occurrences[i]/self.data[i]) for i in range(len(self.data))]
+        self.harmAvg = 1/(numpy.sum(harm_data)/self.totalOccurrences)
+        print "moyenne harmonique discrete groupee = ", self.harmAvg
+
 
 
 class NonGroupedContinuous(Calculator):
@@ -173,12 +196,23 @@ class NonGroupedContinuous(Calculator):
     def arithmetic_average(self):
         print " were here"
         self.arithAvg = numpy.mean(self.data)
-        print "moyenne arithmetique = ", self.arithAvg
+        print "moyenne arithmetique continues non groupees = ", self.arithAvg
 
     def quadratic_average(self):
         square_data = [i*i for i in self.data]
         self.quadAvg = math.sqrt(numpy.mean(square_data))
-        print "moyenne quadratique = ", self.quadAvg
+        print "moyenne quadratique continues non groupees = ", self.quadAvg
+
+    def geometrical_average(self):
+        log_data = [numpy.log(i) for i in self.data]
+        self.geoAvg = math.exp(numpy.mean(log_data))
+        print "moyenne geometrique continues non groupee = ", self.geoAvg
+
+    def harmonic_average(self):
+        harm_data = [1/self.data[i] for i in range(len(self.data))]
+        self.harmAvg = 1/(numpy.mean(harm_data))
+        print "moyenne harmonique continues non groupee = ", self.harmAvg
+
 
 
 class GroupedContinuous(Calculator):
@@ -195,10 +229,19 @@ class GroupedContinuous(Calculator):
     def arithmetic_average(self):
         values = [self.center[i]*self.occurrences[i] for i in range(len(self.center))]
         self.arithAvg = numpy.sum(values)/numpy.sum(self.occurrences)
-        print "moyenne arithmetique = ", self.arithAvg
+        print "moyenne arithmetique continues groupees = ", self.arithAvg
 
     def quadratic_average(self):
         square_values = [(self.center[i]*self.center[i])*self.occurrences[i] for i in range(len(self.center))]
-        self.quadAvg = math.sqrt(numpy.mean(square_values))
-        print "moyenne quadratique = ", self.quadAvg
+        self.quadAvg = math.sqrt(numpy.sum(square_values)/numpy.sum(self.occurrences))
+        print "moyenne quadratique continues groupees = ", self.quadAvg
 
+    def geometrical_average(self):
+        log_data = [numpy.log(self.center[i])*self.occurrences[i] for i in range(len(self.center))]
+        self.geoAvg = math.exp(numpy.sum(log_data)/numpy.sum(self.occurrences))
+        print "moyenne geometrique continues groupee = ", self.geoAvg
+
+    def harmonic_average(self):
+        harm_data = [(self.occurrences[i]/self.center[i]) for i in range(len(self.center))]
+        self.harmAvg = 1/(numpy.sum(harm_data)/numpy.sum(self.occurrences))
+        print "moyenne harmonique discrete groupee = ", self.harmAvg
