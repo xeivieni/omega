@@ -20,6 +20,10 @@ if __name__ == '__main__':
     cng.quadratic_average()
     # cng.display_results()
     cng.harmonic_average()
+    cng.standard_deviation()
+    cng.extremes()
+    cng.moments(2)
+    cng.central_moments(3)
 
     print('############## exo1.dat ################# \n')
     nb_obs, Data1, uns = input_reading.Lecture_data('../../omega_input/data/exo1.dat')
@@ -30,6 +34,10 @@ if __name__ == '__main__':
     dng.quadratic_average()
     dng.geometrical_average()
     dng.harmonic_average()
+    dng.standard_deviation()
+    dng.extremes()
+    dng.moments(2)
+    dng.central_moments(3)
     # dng.display_results()
     #
     # # fichiers a 2-colonnes
@@ -50,6 +58,10 @@ if __name__ == '__main__':
     gd.quadratic_average()
     gd.geometrical_average()
     gd.harmonic_average()
+    gd.standard_deviation()
+    gd.extremes()
+    gd.moments(2)
+    gd.central_moments(3)
 
     # # fichiers a 3-colonnes
     #
@@ -64,3 +76,7 @@ if __name__ == '__main__':
     gc.quadratic_average()
     gc.geometrical_average()
     gc.harmonic_average()
+    gc.standard_deviation()
+    gc.extremes()
+    gc.moments(2)
+    gc.central_moments(3)
