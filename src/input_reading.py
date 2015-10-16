@@ -6,6 +6,7 @@ import os
 import numpy
 import math
 
+
 ### sous fonction pour lire differents type de fichiers de donnees
 
 
@@ -17,7 +18,7 @@ def Lecture_data(Nom_fichier):
     data = numpy.asfarray(data)
 
     ligne = len(data)  # nombre de donnees
-<<<<<<< Updated upstream
+
     colonne = len(data[0])
 
     # fichiers a 1-colonne
@@ -30,24 +31,22 @@ def Lecture_data(Nom_fichier):
     if colonne == 2:
         x = [float(data[i][0]) for i in range(ligne)]
         Effectifs = [int(data[i][1]) for i in range(ligne)]
-=======
-    colonne=len(data[0])
 
-<<<<<<< Updated upstream
-# fichiers a 1-colonne
-=======
+    colonne = len(data[0])
 
-# fichiers à 1-colonne
->>>>>>> Stashed changes
-    if colonne==1:
-        x=[float(data[i]) for i in range(ligne)]
+
+    # fichiers a 1-colonne
+
+
+    # fichiers à 1-colonne
+    if colonne == 1:
+        x = [float(data[i]) for i in range(ligne)]
         return int(ligne), x
 
-# fichiers a 2-colonnes
-    if colonne==2:
-        x=[float(data[i][0]) for i in range(ligne)]
-        Effectifs=[int(data[i][1]) for i in range(ligne)]
->>>>>>> Stashed changes
+    # fichiers a 2-colonnes
+    if colonne == 2:
+        x = [float(data[i][0]) for i in range(ligne)]
+        Effectifs = [int(data[i][1]) for i in range(ligne)]
         return int(numpy.sum(Effectifs)), x, Effectifs
 
     # fichiers a 3-colonnes
@@ -57,8 +56,3 @@ def Lecture_data(Nom_fichier):
         Effectifs = [int(data[i][2]) for i in range(ligne)]
         moyenne_inter = [(x_g[i] + x_d[i]) / 2 for i in range(len(x_g))]
         return int(numpy.sum(Effectifs)), x_g, x_d, Effectifs
-
-### fin sous fonction
-#########################################
-
-## Execution par defaut
