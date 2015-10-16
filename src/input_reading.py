@@ -8,6 +8,7 @@ import math
 
 ### sous fonction pour lire differents type de fichiers de donnees
 
+
 def Lecture_data(Nom_fichier):
     with open(Nom_fichier, 'r') as fichier:
         data_temp = fichier.readlines()
@@ -16,6 +17,7 @@ def Lecture_data(Nom_fichier):
     data = numpy.asfarray(data)
 
     ligne = len(data)  # nombre de donnees
+<<<<<<< Updated upstream
     colonne = len(data[0])
 
     # fichiers a 1-colonne
@@ -28,6 +30,24 @@ def Lecture_data(Nom_fichier):
     if colonne == 2:
         x = [float(data[i][0]) for i in range(ligne)]
         Effectifs = [int(data[i][1]) for i in range(ligne)]
+=======
+    colonne=len(data[0])
+
+<<<<<<< Updated upstream
+# fichiers a 1-colonne
+=======
+
+# fichiers à 1-colonne
+>>>>>>> Stashed changes
+    if colonne==1:
+        x=[float(data[i]) for i in range(ligne)]
+        return int(ligne), x
+
+# fichiers a 2-colonnes
+    if colonne==2:
+        x=[float(data[i][0]) for i in range(ligne)]
+        Effectifs=[int(data[i][1]) for i in range(ligne)]
+>>>>>>> Stashed changes
         return int(numpy.sum(Effectifs)), x, Effectifs
 
     # fichiers a 3-colonnes

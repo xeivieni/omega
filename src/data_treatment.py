@@ -1,52 +1,6 @@
-# This file will handle the computation on the data extracted
 import os
 import numpy
 import math
-
-
-def moments(data):
-    ##########################################################################################
-    ## Moment of ordre 1 to 4
-    for k in range(len(data[1])):
-        m1 = m1 + data[1][i] * data[2][i]
-        m2 = m2 + ((data[1][i]) ** 2) * data[2][i]
-        m3 = m3 + ((data[1][i]) ** 3) * data[2][i]
-        m4 = m4 + ((data[1][i]) ** 4) * data[2][i]
-
-    mom_1 = m1 / data[0]
-    mom_2 = m2 / data[0]
-    mom_3 = m3 / data[0]
-    mom_4 = m4 / data[0]
-
-    ## Centered moment of ordre 1 to 4
-    for k in range(len(data[1])):
-        u1 = u1 + (data[1][i] - mean_arith) * data[2][i]
-        u2 = u2 + ((data[1][i] - mean_arith) ** 2) * data[2][i]
-        u3 = u3 + ((data[1][i] - mean_arith) ** 3) * data[2][i]
-        u4 = u4 + ((data[1][i] - mean_arith) ** 4) * data[2][i]
-
-    mom_cent_1 = u1 / data[0]
-    mom_cent_2 = u2 / data[0]
-    mom_cent_3 = u3 / data[0]
-    mom_cent_4 = u4 / data[0]
-    sqrt_var = sqrt(mom_cent_2)
-
-    # Coefficient of asymmetry and flattening
-    y1 = (mom_cent_3 / (sqrt_var ** 3))
-    y2 = (mom_cent_4 / (sqrt_var ** 4)) - 3
-    ##########################################################################################
-
-    print('Min = %f \n' % min)
-    print('Max = %f \n' % max)
-    print('Moyenne arithmetique = %.3f' % mean_arith)
-    print('Moyenne quadratique = %.3f' % mean_quad)
-    print('Moyenne geometrique = %.3f' % mean_geo)
-    print('Moyenne harmonique = %.3f\n' % mean_harm)
-    print('Ecart type = %.3f\n' % std)
-    print('Variance = %.3f\n' % mom_cent_2)
-    print('Ecart type du moment centre d ordre deux = %.3f\n' % sqrt_var)
-    print('Coefficient de dissymetrie = %.3f\n' % y1)
-    print('Coefficient d applatissement = %.3f\n' % y2)
 
 
 class Calculator(object):
@@ -126,7 +80,6 @@ class NonGroupedDiscrete(Calculator):
         self.std = self.average([abs(i - self.arithAvg) for i in self.data], self.nbLines)
 
 
-
 class GroupedDiscrete(Calculator):
     """Class for grouped discrete values treatment"""
 
@@ -158,7 +111,6 @@ class GroupedDiscrete(Calculator):
             self.totalOccurrences)
 
 
-
 class NonGroupedContinuous(Calculator):
     """Class for non grouped continuous values treatment"""
 
@@ -179,7 +131,6 @@ class NonGroupedContinuous(Calculator):
         self.centralMomentsR = self.moments([(i - self.arithAvg) for i in self.data],
                                             [1 for i in range(len(self.data))], 4)
         self.std = self.average([abs(i - self.arithAvg) for i in self.data], self.nbLines)
-
 
 
 class GroupedContinuous(Calculator):
