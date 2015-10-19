@@ -16,6 +16,7 @@ if __name__ == '__main__':
     cng = data_treatment.NonGroupedContinuous(ligne, Data01)
     cng.run()
     cng.display_results()
+    cng.generate_latex()
 
     print('############## exo1.dat ################# \n')
     nb_obs, Data1, uns = input_reading.Lecture_data('../input/exo1.dat')

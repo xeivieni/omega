@@ -4,6 +4,7 @@
 import os
 import numpy
 import math
+import pdf_extract
 
 
 class Calculator(object):
@@ -74,6 +75,16 @@ class Calculator(object):
                 self.centralMomentsR[1])  # Variance is the square root of the central moment of order 2
             self.dissym = self.centralMomentsR[2] / (self.var ** 3)
             self.flattening = (self.centralMomentsR[3] / (self.var ** 4)) - 3
+
+    def generate_latex(self):
+        with open("temp.tex", 'w') as tex_file:
+            tex_file.write(pdf_extract.TEMPLATE)
+
+        os.system("pdflatex temp.tex")
+        os.system("htlatex temp.tex")
+        os.system("mv temp.pdf report.pdf")
+        os.system("mv temp.html report.html")
+        os.system("rm temp.*")
 
 
 class NonGroupedDiscrete(Calculator):
