@@ -9,6 +9,11 @@ import input_reading
 if __name__ == '__main__':
     # fichiers a 1-colonne
 
+    input_file = raw_input('Glissez déposez le fichier a tester et appuyez sur entrée (format .dat) : ')
+    print('file name is : '), input_file
+
+
+
     print('############## exo01.dat ################# \n')
     ligne, Data01, uns = input_reading.Lecture_data('../input/exo01.dat')
     print("nombre d'observations= %d \n" % ligne)

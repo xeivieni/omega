@@ -4,7 +4,7 @@
 import os
 import numpy
 import math
-import pdf_extract
+import tex_generator
 
 
 class Calculator(object):
@@ -17,18 +17,18 @@ class Calculator(object):
         """
         Class constructor for non grouped discrete data
         """
-        self.arithAvg = 0
-        self.quadAvg = 0
-        self.geoAvg = 0
-        self.harmAvg = 0
-        self.std = 0
-        self.var = 0
-        self.momentsR = []
-        self.centralMomentsR = []
-        self.dissym = 0
-        self.min = 0
-        self.max = 0
-        self.flattening = 0
+        self.results = {'arithAvg': 0,
+                        'quadAvg': 0,
+                        'geoAvg': 0,
+                        'harmAvg': 0,
+                        'std': 0,
+                        'var': 0,
+                        'momentsR': [],
+                        'centralMomentsR': [],
+                        'dissym': 0,
+                        'min': 0,
+                        'max': 0,
+                        'flattening': 0}
 
     def display_results(self):
         """
@@ -36,18 +36,18 @@ class Calculator(object):
         :return: None
         """
         print "Resultats pour le fichier : \n================================"
-        print "Moyenne arithmetique : ", self.arithAvg
-        print "Moyenne quadratique : ", self.quadAvg
-        print "Moyenne geometrique : ", self.geoAvg
-        print "Moyenne harmonique : ", self.harmAvg
-        print "Ecart a la moyenne : ", self.std
-        print "Valeure maximale : ", self.max
-        print "Valeurs minimale : ", self.min
-        print "Variance : ", self.var
-        print "Moments d'ordre R (jusqu'a 4) : ", self.momentsR
-        print "Moments centrés d'ordre R (jusqu'a 4) : ", self.centralMomentsR
-        print "Dissymetrie : ", self.dissym
-        print "Coefficient d'applatissement : ", self.flattening
+        print "Moyenne arithmetique : ", self.results['arithAvg']
+        print "Moyenne quadratique : ", self.results['quadAvg']
+        print "Moyenne geometrique : ", self.results['geoAvg']
+        print "Moyenne harmonique : ", self.results['harmAvg']
+        print "Ecart a la moyenne : ", self.results['std']
+        print "Valeure maximale : ", self.results['max']
+        print "Valeurs minimale : ", self.results['min']
+        print "Variance : ", self.results['var']
+        print "Moments d'ordre R (jusqu'a 4) : ", self.results['momentsR']
+        print "Moments centrés d'ordre R (jusqu'a 4) : ", self.results['centralMomentsR']
+        print "Dissymetrie : ", self.results['dissym']
+        print "Coefficient d'applatissement : ", self.results['flattening']
 
     def average(self, data, number=None):
         """
@@ -70,15 +70,16 @@ class Calculator(object):
         return _moments
 
     def coefficients(self):
-        if len(self.centralMomentsR) > 2:
-            self.var = math.sqrt(
-                self.centralMomentsR[1])  # Variance is the square root of the central moment of order 2
-            self.dissym = self.centralMomentsR[2] / (self.var ** 3)
-            self.flattening = (self.centralMomentsR[3] / (self.var ** 4)) - 3
+        if len(self.results['centralMomentsR']) > 2:
+            self.results['var'] = math.sqrt(
+                self.results['centralMomentsR'][1])  # Variance is the square root of the central moment of order 2
+            self.results['dissym'] = self.results['centralMomentsR'][2] / (self.results['var'] ** 3)
+            self.results['flattening'] = (self.results['centralMomentsR'][3] / (self.results['var'] ** 4)) - 3
 
     def generate_latex(self):
+        tex_content = tex_generator.TEMPLATE.format(d=self.results)
         with open("temp.tex", 'w') as tex_file:
-            tex_file.write(pdf_extract.TEMPLATE)
+            tex_file.write(tex_content)
 
         os.system("pdflatex temp.tex")
         os.system("htlatex temp.tex")
@@ -110,16 +111,16 @@ class NonGroupedDiscrete(Calculator):
         different coefficients of the non grouped set of discrete data.
         :return: None
         """
-        self.arithAvg = self.average(self.data)
-        self.quadAvg = math.sqrt(self.average([i * i for i in self.data], self.nbLines))
-        self.geoAvg = math.exp(self.average([numpy.log(i) for i in self.data], self.nbLines))
-        self.harmAvg = 1 / self.average([(1 / self.data[i]) for i in range(len(self.data))], self.nbLines)
-        self.max = numpy.max(self.data)
-        self.min = numpy.min(self.data)
-        self.momentsR = self.moments(self.data, [1 for i in range(len(self.data))], 4)
-        self.centralMomentsR = self.moments([(i - self.arithAvg) for i in self.data],
-                                            [1 for i in range(len(self.data))], 4)
-        self.std = self.average([abs(i - self.arithAvg) for i in self.data], self.nbLines)
+        self.results['arithAvg'] = self.average(self.data)
+        self.results['quadAvg'] = math.sqrt(self.average([i * i for i in self.data], self.nbLines))
+        self.results['geoAvg'] = math.exp(self.average([numpy.log(i) for i in self.data], self.nbLines))
+        self.results['harmAvg'] = 1 / self.average([(1 / self.data[i]) for i in range(len(self.data))], self.nbLines)
+        self.results['max'] = numpy.max(self.data)
+        self.results['min'] = numpy.min(self.data)
+        self.results['momentsR'] = self.moments(self.data, [1 for i in range(len(self.data))], 4)
+        self.results['centralMomentsR'] = self.moments([(i - self.results['arithAvg']) for i in self.data],
+                                                       [1 for i in range(len(self.data))], 4)
+        self.results['std'] = self.average([abs(i - self.results['arithAvg']) for i in self.data], self.nbLines)
         self.coefficients()
 
 
@@ -146,22 +147,24 @@ class GroupedDiscrete(Calculator):
         different coefficients of the grouped set of discrete data.
         :return : None
         """
-        self.arithAvg = self.average([self.data[i] * self.occurrences[i] for i in range(len(self.data))],
-                                     self.totalOccurrences)
-        self.quadAvg = math.sqrt(
+        self.results['arithAvg'] = self.average([self.data[i] * self.occurrences[i] for i in range(len(self.data))],
+                                                self.totalOccurrences)
+        self.results['quadAvg'] = math.sqrt(
             self.average([(self.data[i] * self.data[i]) * self.occurrences[i] for i in range(len(self.data))],
                          self.totalOccurrences))
-        self.geoAvg = math.exp(
+        self.results['geoAvg'] = math.exp(
             self.average([numpy.log(self.data[i]) * self.occurrences[i] for i in range(len(self.data))],
                          self.totalOccurrences))
-        self.harmAvg = 1 / self.average([(self.occurrences[i] / self.data[i]) for i in range(len(self.data))],
-                                        self.totalOccurrences)
-        self.max = numpy.max(self.data)
-        self.min = numpy.min(self.data)
-        self.momentsR = self.moments(self.data, self.occurrences, 4)
-        self.centralMomentsR = self.moments([(i - self.arithAvg) for i in self.data], self.occurrences, 4)
-        self.std = self.average(
-            [self.occurrences[i] * abs(self.data[i] - self.arithAvg) for i in range(len(self.data))],
+        self.results['harmAvg'] = 1 / self.average(
+            [(self.occurrences[i] / self.data[i]) for i in range(len(self.data))],
+            self.totalOccurrences)
+        self.results['max'] = numpy.max(self.data)
+        self.results['min'] = numpy.min(self.data)
+        self.results['momentsR'] = self.moments(self.data, self.occurrences, 4)
+        self.results['centralMomentsR'] = self.moments([(i - self.results['arithAvg']) for i in self.data],
+                                                       self.occurrences, 4)
+        self.results['std'] = self.average(
+            [self.occurrences[i] * abs(self.data[i] - self.results['arithAvg']) for i in range(len(self.data))],
             self.totalOccurrences)
         self.coefficients()
 
@@ -181,16 +184,16 @@ class NonGroupedContinuous(Calculator):
         different coefficients of the non grouped set of continuous data.
         :return : None
         """
-        self.arithAvg = self.average(self.data)
-        self.quadAvg = math.sqrt(self.average([i * i for i in self.data], self.nbLines))
-        self.geoAvg = math.exp(self.average([numpy.log(i) for i in self.data], self.nbLines))
-        self.harmAvg = 1 / self.average([(1 / self.data[i]) for i in range(len(self.data))], self.nbLines)
-        self.max = numpy.max(self.data)
-        self.min = numpy.min(self.data)
-        self.momentsR = self.moments(self.data, [1 for i in range(len(self.data))], 4)
-        self.centralMomentsR = self.moments([(i - self.arithAvg) for i in self.data],
-                                            [1 for i in range(len(self.data))], 4)
-        self.std = self.average([abs(i - self.arithAvg) for i in self.data], self.nbLines)
+        self.results['arithAvg'] = self.average(self.data)
+        self.results['quadAvg'] = math.sqrt(self.average([i * i for i in self.data], self.nbLines))
+        self.results['geoAvg'] = math.exp(self.average([numpy.log(i) for i in self.data], self.nbLines))
+        self.results['harmAvg'] = 1 / self.average([(1 / self.data[i]) for i in range(len(self.data))], self.nbLines)
+        self.results['max'] = numpy.max(self.data)
+        self.results['min'] = numpy.min(self.data)
+        self.results['momentsR'] = self.moments(self.data, [1 for i in range(len(self.data))], 4)
+        self.results['centralMomentsR'] = self.moments([(i - self.results['arithAvg']) for i in self.data],
+                                                       [1 for i in range(len(self.data))], 4)
+        self.results['std'] = self.average([abs(i - self.results['arithAvg']) for i in self.data], self.nbLines)
         self.coefficients()
 
 
@@ -220,22 +223,25 @@ class GroupedContinuous(Calculator):
         different coefficients of the grouped set of continuous data.
         :return : None
         """
-        self.arithAvg = self.average([self.centers[i] * self.occurrences[i] for i in range(len(self.centers))],
-                                     sum(self.occurrences))
-        self.quadAvg = math.sqrt(
+        self.results['arithAvg'] = self.average(
+            [self.centers[i] * self.occurrences[i] for i in range(len(self.centers))],
+            sum(self.occurrences))
+        self.results['quadAvg'] = math.sqrt(
             self.average([(self.centers[i] * self.centers[i]) * self.occurrences[i] for i in range(len(self.centers))],
                          self.totalOccurrences))
 
-        self.geoAvg = math.exp(
+        self.results['geoAvg'] = math.exp(
             self.average([numpy.log(self.centers[i]) * self.occurrences[i] for i in range(len(self.centers))],
                          self.totalOccurrences))
-        self.harmAvg = 1 / self.average([(self.occurrences[i] / self.centers[i]) for i in range(len(self.centers))],
-                                        self.totalOccurrences)
-        self.max = numpy.max(self.centers)
-        self.min = numpy.min(self.centers)
-        self.momentsR = self.moments(self.centers, self.occurrences, 4)
-        self.centralMomentsR = self.moments([(i - self.arithAvg) for i in self.centers], self.occurrences, 4)
-        self.std = self.average(
-            [self.occurrences[i] * abs(self.centers[i] - self.arithAvg) for i in range(len(self.centers))],
+        self.results['harmAvg'] = 1 / self.average(
+            [(self.occurrences[i] / self.centers[i]) for i in range(len(self.centers))],
+            self.totalOccurrences)
+        self.results['max'] = numpy.max(self.centers)
+        self.results['min'] = numpy.min(self.centers)
+        self.results['momentsR'] = self.moments(self.centers, self.occurrences, 4)
+        self.results['centralMomentsR'] = self.moments([(i - self.results['arithAvg']) for i in self.centers],
+                                                       self.occurrences, 4)
+        self.results['std'] = self.average(
+            [self.occurrences[i] * abs(self.centers[i] - self.results['arithAvg']) for i in range(len(self.centers))],
             self.totalOccurrences)
         self.coefficients()
