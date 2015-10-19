@@ -1,5 +1,7 @@
-# This file is the program which will read the input files and return the data.
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
 
+# This file is the program which will read the input files and return the data.
 
 from __future__ import division  ## pour la division
 import os
