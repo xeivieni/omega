@@ -11,6 +11,7 @@ class Calculator(object):
     """
     Class computing the operations
     This class cannot be used directly, it can only be subclassed to inherit from its properties.
+    modif nawel
     """
 
     def __init__(self):
