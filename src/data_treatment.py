@@ -11,10 +11,9 @@ class Calculator(object):
     """
     Class computing the operations
     This class cannot be used directly, it can only be subclassed to inherit from its properties.
-    modif nawel
     """
 
-    def __init__(self):
+    def __init__(self, n, d=None, dl=None, dr=None, o=None):
         """
         Class constructor for non grouped discrete data
         """
@@ -30,6 +29,105 @@ class Calculator(object):
                         'min': 0,
                         'max': 0,
                         'flattening': 0}
+
+        if o is None and (type(d[0]) is not float):
+            self.nbLines = n
+            self.data = d
+            self.type = "Non groupées discrètes"
+            self.run_non_grouped()
+
+        if o is None and (type(d[0]) is float):
+            self.totalOccurrences = n
+            self.nbLines = n
+            self.data = d
+            self.type = "Non groupées continues"
+            self.run_non_grouped()
+
+        if dl is None and dr is None and (type(d[0]) is float):
+            self.totalOccurrences = n
+            self.data = d
+            self.occurrences = o
+            self.type = "Groupées discètes"
+            self.run_grouped_discrete()
+
+        if dl is not None and dr is not None:
+            self.totalOccurrences = n
+            self.type = "Groupées continues"
+            self.lowerBounds = dl
+            self.higherBounds = dr
+            self.data = [(self.lowerBounds[i] + self.higherBounds[i]) / 2 for i in range(len(self.lowerBounds))]
+            self.occurrences = o
+
+        self.coefficients()
+
+    def run_grouped_discrete(self):
+        """
+        This method runs the different operations in order to calculate the
+        different coefficients of the grouped set of discrete data.
+        :return : None
+        """
+        self.results['arithAvg'] = self.average([self.data[i] * self.occurrences[i] for i in range(len(self.data))],
+                                                self.totalOccurrences)
+        self.results['quadAvg'] = math.sqrt(
+            self.average([(self.data[i] * self.data[i]) * self.occurrences[i] for i in range(len(self.data))],
+                         self.totalOccurrences))
+        self.results['geoAvg'] = math.exp(
+            self.average([numpy.log(self.data[i]) * self.occurrences[i] for i in range(len(self.data))],
+                         self.totalOccurrences))
+        self.results['harmAvg'] = 1 / self.average(
+            [(self.occurrences[i] / self.data[i]) for i in range(len(self.data))],
+            self.totalOccurrences)
+        self.results['max'] = numpy.max(self.data)
+        self.results['min'] = numpy.min(self.data)
+        self.results['momentsR'] = self.moments(self.data, self.occurrences, 4)
+        self.results['centralMomentsR'] = self.moments([(i - self.results['arithAvg']) for i in self.data],
+                                                       self.occurrences, 4)
+        self.results['std'] = self.average(
+            [self.occurrences[i] * abs(self.data[i] - self.results['arithAvg']) for i in range(len(self.data))],
+            self.totalOccurrences)
+
+    def run_grouped_continuous(self):
+        """
+        This method runs the different operations in order to calculate the
+        different coefficients of the grouped set of continuous data.
+        :return : None
+        """
+        self.results['arithAvg'] = self.average([self.data[i] * self.occurrences[i] for i in range(len(self.data))],
+                                                sum(self.occurrences))
+        self.results['quadAvg'] = math.sqrt(
+            self.average([(self.data[i] * self.data[i]) * self.occurrences[i] for i in range(len(self.data))],
+                         self.totalOccurrences))
+        self.results['geoAvg'] = math.exp(
+            self.average([numpy.log(self.data[i]) * self.occurrences[i] for i in range(len(self.data))],
+                         self.totalOccurrences))
+        self.results['harmAvg'] = 1 / self.average(
+            [(self.occurrences[i] / self.data[i]) for i in range(len(self.data))],
+            self.totalOccurrences)
+        self.results['max'] = numpy.max(self.data)
+        self.results['min'] = numpy.min(self.data)
+        self.results['momentsR'] = self.moments(self.data, self.occurrences, 4)
+        self.results['centralMomentsR'] = self.moments([(i - self.results['arithAvg']) for i in self.data],
+                                                       self.occurrences, 4)
+        self.results['std'] = self.average(
+            [self.occurrences[i] * abs(self.data[i] - self.results['arithAvg']) for i in range(len(self.data))],
+            self.totalOccurrences)
+
+    def run_non_grouped(self):
+        """
+        This method runs the different operations in order to calculate the
+        different coefficients of the non grouped set of continuous data.
+        :return : None
+        """
+        self.results['arithAvg'] = self.average(self.data)
+        self.results['quadAvg'] = math.sqrt(self.average([i * i for i in self.data], self.nbLines))
+        self.results['geoAvg'] = math.exp(self.average([numpy.log(i) for i in self.data], self.nbLines))
+        self.results['harmAvg'] = 1 / self.average([(1 / self.data[i]) for i in range(len(self.data))], self.nbLines)
+        self.results['max'] = numpy.max(self.data)
+        self.results['min'] = numpy.min(self.data)
+        self.results['momentsR'] = self.moments(self.data, [1 for i in range(len(self.data))], 4)
+        self.results['centralMomentsR'] = self.moments([(i - self.results['arithAvg']) for i in self.data],
+                                                       [1 for i in range(len(self.data))], 4)
+        self.results['std'] = self.average([abs(i - self.results['arithAvg']) for i in self.data], self.nbLines)
 
     def display_results(self):
         """
@@ -84,9 +182,10 @@ class Calculator(object):
 
         os.system("pdflatex temp.tex")
         os.system("htlatex temp.tex")
-        os.system("mv temp.pdf report.pdf")
-        os.system("mv temp.html report.html")
-        os.system("rm temp.*")
+        os.system("mv temp.pdf ../report/report.pdf")
+        os.system("mv temp.html ../report/report.html")
+        os.system("mv temp.tex ../report/report.tex")
+        # os.system("rm temp.*")
 
 
 class NonGroupedDiscrete(Calculator):
