@@ -6,6 +6,9 @@
 import data_treatment
 import input_reading
 
+
+#TODO : Afficher nombre de donnees dans le fichier pdf
+
 if __name__ == '__main__':
     # fichiers a 1-colonne
 
@@ -21,7 +24,7 @@ if __name__ == '__main__':
     cng = data_treatment.NonGroupedContinuous(ligne, Data01)
     cng.run()
     cng.display_results()
-    cng.generate_latex()
+    #cng.generate_latex()
 
     print('############## exo1.dat ################# \n')
     nb_obs, Data1, uns = input_reading.Lecture_data('../input/exo1.dat')
@@ -30,6 +33,7 @@ if __name__ == '__main__':
     dng = data_treatment.NonGroupedDiscrete(nb_obs, Data1)
     dng.run()
     dng.display_results()
+    dng.generate_latex()
 
     print('############## exo3.dat ################# \n')
     nb_obs, Data3, Effectifs = input_reading.Lecture_data('../input/exo3.dat')

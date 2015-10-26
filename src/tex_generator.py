@@ -14,15 +14,15 @@ TEMPLATE = r"""
 \begin{{document}}
 \begin{{titlepage}}
 \centering
-{{\scshape\LARGE Statistiques modélisation et fiabilité \par}}
+{{\scshape\LARGE Statistiques mod\'elisation et fiabilit\'e \par}}
 \vspace{{1cm}}
 {{\scshape\Large Mini projet\par}}
 \vspace{{1.5cm}}
-{{\huge\bfseries Fichier de résultat\par}}
+{{\huge\bfseries Fichier de r\'esultat\par}}
 \vspace{{2cm}}
-{{\Large\itshape Jonathan Quie, Cyril Boyer, Nawal El Bannay, Ernest Nob Bakinde, Thibaud Hulot, Clément Mondion\par}}
+{{\Large\itshape Jonathan Quie, Cyril Boyer, Nawal El Bannay, Ernest Nob Bakinde, Thibaud Hulot, Cl\'ement Mondion\par}}
 \vfill
-supervisé par\par
+supervis\'e par\par
 M. Dariush \textsc{{Ghorbanzadeh}}
 
 \vfill
@@ -31,20 +31,20 @@ M. Dariush \textsc{{Ghorbanzadeh}}
 {{\large \today\par}}
 \end{{titlepage}}
 
-\section{{Table de résultats}}
+\section{{Table de r\'esultats}}
 
 \bigskip
-\noindent {{\bf Ci dessous les différents résultats caractérisant la suite de données }}\\
+\noindent {{\bf Ci dessous les diff\'erents r\'esultats caract\'erisant la suite de donn\'ees }}\\
 \renewcommand{{\array}}{{2}} % hauteur des cellules du tableau
 \begin{{tabular}}{{|l|l|}}
   \hline \hline
   \multicolumn{{2}}{{c}}{{Moyennes : }} \\
   \hline
-  Arithmétique          &  {d[arithAvg]} \\
+  Arithm\'etique          &  {d[arithAvg]} \\
   \hline
   Quadratique 	& {d[quadAvg]} \\
   \hline
-  Géométrique             &  {d[geoAvg]} \\
+  G\'eom\'etrique             &  {d[geoAvg]} \\
   \hline
   Harmonique             &  {d[harmAvg]} \\
   \hline
@@ -64,21 +64,21 @@ M. Dariush \textsc{{Ghorbanzadeh}}
     \hline
   Ordre 4 & {d[momentsR]} \\
   \hline
-  Centré ordre 1 & {d[centralMomentsR]} \\
+  Centr\'e ordre 1 & {d[centralMomentsR]} \\
   \hline
-  Centré ordre 2 & {d[centralMomentsR]} \\
+  Centr\'e ordre 2 & {d[centralMomentsR]} \\
    \hline
-  Centré ordre 3 & {d[centralMomentsR]} \\
+  Centr\'e ordre 3 & {d[centralMomentsR]} \\
    \hline
-  Centré ordre 4 & {d[centralMomentsR]} \\
+  Centr\'e ordre 4 & {d[centralMomentsR]} \\
   \hline
   \multicolumn{{2}}{{c}}{{Autres : }} \\
   \hline
-  Ecart a la moyenne arithmétique & {d[std]} \\
+  Ecart a la moyenne arithm\'etique & {d[std]} \\
     \hline
   Variance & {d[var]} \\
     \hline
-  Coefficient de dissymétrie & {d[dissym]} \\
+  Coefficient de dissym\'etrie & {d[dissym]} \\
     \hline
   Coefficient d'applatissement & {d[flattening]} \\
   \hline

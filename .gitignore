@@ -1,3 +1,11 @@
-*.pyc
-*.html
-*.pdf
+src/*.pyc
+
+
+
+src/data_treatment.pyc
+
+src/input_reading.pyc
+
+src/report.pdf
+
+src/report.html
