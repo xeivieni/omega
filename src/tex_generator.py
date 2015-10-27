@@ -56,21 +56,21 @@ M. Dariush \textsc{{Ghorbanzadeh}}
   \hline
   \multicolumn{{2}}{{c}}{{Moments : }} \\
   \hline
-  Ordre 1 & {d[momentsR]} \\
+  Ordre 1 & {m1} \\
     \hline
-  Ordre 2 & {d[momentsR]} \\
+  Ordre 2 & {m2} \\
     \hline
-  Ordre 3 & {d[momentsR]} \\
+  Ordre 3 & {m3} \\
     \hline
-  Ordre 4 & {d[momentsR]} \\
+  Ordre 4 & {m4} \\
   \hline
-  Centr\'e ordre 1 & {d[centralMomentsR]} \\
+  Centr\'e ordre 1 & {c1} \\
   \hline
-  Centr\'e ordre 2 & {d[centralMomentsR]} \\
+  Centr\'e ordre 2 & {c2} \\
    \hline
-  Centr\'e ordre 3 & {d[centralMomentsR]} \\
+  Centr\'e ordre 3 & {c3} \\
    \hline
-  Centr\'e ordre 4 & {d[centralMomentsR]} \\
+  Centr\'e ordre 4 & {c4} \\
   \hline
   \multicolumn{{2}}{{c}}{{Autres : }} \\
   \hline

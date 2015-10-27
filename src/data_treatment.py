@@ -5,6 +5,9 @@ import os
 import numpy
 import math
 import tex_generator
+import matplotlib.mlab as mlab
+import matplotlib.pyplot as plt
+
 
 
 class Calculator(object):
@@ -17,7 +20,6 @@ class Calculator(object):
         """
         Class constructor for non grouped discrete data
         """
-        print "n=", n, "d=", d, "dl=", dl, "dr=", dr, "o=", o
         self.results = {'arithAvg': 0,
                         'quadAvg': 0,
                         'geoAvg': 0,
@@ -40,13 +42,13 @@ class Calculator(object):
             else:
                 self.type = "Non groupées continues"
 
-        if dl is None and dr is None:
+        elif dl is None and dr is None:
             self.totalOccurrences = n
             self.data = d
             self.occurrences = o
             self.type = "Groupées discètes"
 
-        if dl is not None and dr is not None:
+        else:
             self.totalOccurrences = n
             self.data = [(dl[i] + dr[i]) / 2 for i in range(len(o))]
             self.occurrences = o
@@ -56,6 +58,8 @@ class Calculator(object):
 
         self.calculate()
         self.coefficients()
+        self.generate_latex()
+        self.histogram()
 
     def calculate(self):
         """
@@ -129,8 +133,26 @@ class Calculator(object):
             self.results['dissym'] = self.results['centralMomentsR'][2] / (self.results['var'] ** 3)
             self.results['flattening'] = (self.results['centralMomentsR'][3] / (self.results['var'] ** 4)) - 3
 
+    def histogram(self):
+        print "longueures egales ?", len(self.occurrences) == len(self.data)
+        n, bins, patches = plt.hist(self.data)
+        print n, bins, patches
+        #plt.plot(bins, 'r--')
+        plt.xlabel("Observations")
+        plt.ylabel("Effectifs")
+        plt.title("Histogramme")
+        #fig = plt.savefig()
+        #plt.show()
+
     def generate_latex(self):
-        tex_content = tex_generator.TEMPLATE.format(d=self.results)
+        tex_content = tex_generator.TEMPLATE.format(d=self.results, m1=self.results['momentsR'][0],
+                                                    m2=self.results['momentsR'][1],
+                                                    m3=self.results['momentsR'][2],
+                                                    m4=self.results['momentsR'][3],
+                                                    c1=self.results['centralMomentsR'][0],
+                                                    c2=self.results['centralMomentsR'][1],
+                                                    c3=self.results['centralMomentsR'][2],
+                                                    c4=self.results['centralMomentsR'][3])
         with open("temp.tex", 'w') as tex_file:
             tex_file.write(tex_content)
 
