@@ -17,6 +17,7 @@ class Calculator(object):
         """
         Class constructor for non grouped discrete data
         """
+        print "n=", n, "d=", d, "dl=", dl, "dr=", dr, "o=", o
         self.results = {'arithAvg': 0,
                         'quadAvg': 0,
                         'geoAvg': 0,
@@ -38,23 +39,22 @@ class Calculator(object):
                 self.type = "Non groupées discrètes"
             else:
                 self.type = "Non groupées continues"
-            self.calculate()
 
         if dl is None and dr is None:
             self.totalOccurrences = n
             self.data = d
             self.occurrences = o
             self.type = "Groupées discètes"
-            self.calculate()
 
         if dl is not None and dr is not None:
             self.totalOccurrences = n
-            self.data = [(self.lowerBounds[i] + self.higherBounds[i]) / 2 for i in range(n)]
+            self.data = [(dl[i] + dr[i]) / 2 for i in range(len(o))]
             self.occurrences = o
             self.type = "Groupées continues"
             self.lowerBounds = dl
             self.higherBounds = dr
 
+        self.calculate()
         self.coefficients()
 
     def calculate(self):
@@ -82,23 +82,6 @@ class Calculator(object):
         self.results['std'] = self.average(
             [self.occurrences[i] * abs(self.data[i] - self.results['arithAvg']) for i in range(len(self.data))],
             self.totalOccurrences)
-
-    # def run_non_grouped(self):
-    #     """
-    #     This method runs the different operations in order to calculate the
-    #     different coefficients of the non grouped set of continuous data.
-    #     :return : None
-    #     """
-    #     self.results['arithAvg'] = self.average(self.data)
-    #     self.results['quadAvg'] = math.sqrt(self.average([i * i for i in self.data], self.nbLines))
-    #     self.results['geoAvg'] = math.exp(self.average([numpy.log(i) for i in self.data], self.nbLines))
-    #     self.results['harmAvg'] = 1 / self.average([(1 / self.data[i]) for i in range(len(self.data))], self.nbLines)
-    #     self.results['max'] = numpy.max(self.data)
-    #     self.results['min'] = numpy.min(self.data)
-    #     self.results['momentsR'] = self.moments(self.data, [1 for i in range(len(self.data))], 4)
-    #     self.results['centralMomentsR'] = self.moments([(i - self.results['arithAvg']) for i in self.data],
-    #                                                    [1 for i in range(len(self.data))], 4)
-    #     self.results['std'] = self.average([abs(i - self.results['arithAvg']) for i in self.data], self.nbLines)
 
     def display_results(self):
         """
@@ -156,163 +139,4 @@ class Calculator(object):
         os.system("mv temp.pdf ../report/report.pdf")
         os.system("mv temp.html ../report/report.html")
         os.system("mv temp.tex ../report/report.tex")
-        # os.system("rm temp.*")
-
-
-class NonGroupedDiscrete(Calculator):
-    """
-    Class for non grouped discrete values treatment
-    """
-
-    def __init__(self, n, d):
-        """
-        Class constructor
-        :param n: Number of lines
-        :param d: List containing the data
-        :return: None
-        """
-        Calculator.__init__(self)
-        self.nbLines = n
-        self.data = d
-        self.run()
-
-    def run(self):
-        """
-        This method runs the different operations in order to calculate the
-        different coefficients of the non grouped set of discrete data.
-        :return: None
-        """
-        self.results['arithAvg'] = self.average(self.data)
-        self.results['quadAvg'] = math.sqrt(self.average([i * i for i in self.data], self.nbLines))
-        self.results['geoAvg'] = math.exp(self.average([numpy.log(i) for i in self.data], self.nbLines))
-        self.results['harmAvg'] = 1 / self.average([(1 / self.data[i]) for i in range(len(self.data))], self.nbLines)
-        self.results['max'] = numpy.max(self.data)
-        self.results['min'] = numpy.min(self.data)
-        self.results['momentsR'] = self.moments(self.data, [1 for i in range(len(self.data))], 4)
-        self.results['centralMomentsR'] = self.moments([(i - self.results['arithAvg']) for i in self.data],
-                                                       [1 for i in range(len(self.data))], 4)
-        self.results['std'] = self.average([abs(i - self.results['arithAvg']) for i in self.data], self.nbLines)
-        self.coefficients()
-
-
-class GroupedDiscrete(Calculator):
-    """Class for grouped discrete values treatment"""
-
-    def __init__(self, s, d, e):
-        """
-        Class constructor
-        :param s: The sum of all the occurrences. Used to calculated the average.
-        :param d: The list containing the data
-        :param e: The list of the corresponding occurrences
-        :return: None
-        """
-        Calculator.__init__(self)
-        self.data = d
-        self.occurrences = e
-        self.totalOccurrences = s
-        self.run()
-
-    def run(self):
-        """
-        This method runs the different operations in order to calculate the
-        different coefficients of the grouped set of discrete data.
-        :return : None
-        """
-        self.results['arithAvg'] = self.average([self.data[i] * self.occurrences[i] for i in range(len(self.data))],
-                                                self.totalOccurrences)
-        self.results['quadAvg'] = math.sqrt(
-            self.average([(self.data[i] * self.data[i]) * self.occurrences[i] for i in range(len(self.data))],
-                         self.totalOccurrences))
-        self.results['geoAvg'] = math.exp(
-            self.average([numpy.log(self.data[i]) * self.occurrences[i] for i in range(len(self.data))],
-                         self.totalOccurrences))
-        self.results['harmAvg'] = 1 / self.average(
-            [(self.occurrences[i] / self.data[i]) for i in range(len(self.data))],
-            self.totalOccurrences)
-        self.results['max'] = numpy.max(self.data)
-        self.results['min'] = numpy.min(self.data)
-        self.results['momentsR'] = self.moments(self.data, self.occurrences, 4)
-        self.results['centralMomentsR'] = self.moments([(i - self.results['arithAvg']) for i in self.data],
-                                                       self.occurrences, 4)
-        self.results['std'] = self.average(
-            [self.occurrences[i] * abs(self.data[i] - self.results['arithAvg']) for i in range(len(self.data))],
-            self.totalOccurrences)
-        self.coefficients()
-
-
-class NonGroupedContinuous(Calculator):
-    """Class for non grouped continuous values treatment"""
-
-    def __init__(self, n, d):
-        Calculator.__init__(self)
-        self.nbLines = n
-        self.data = d
-        self.run()
-
-    def run(self):
-        """
-        This method runs the different operations in order to calculate the
-        different coefficients of the non grouped set of continuous data.
-        :return : None
-        """
-        self.results['arithAvg'] = self.average(self.data)
-        self.results['quadAvg'] = math.sqrt(self.average([i * i for i in self.data], self.nbLines))
-        self.results['geoAvg'] = math.exp(self.average([numpy.log(i) for i in self.data], self.nbLines))
-        self.results['harmAvg'] = 1 / self.average([(1 / self.data[i]) for i in range(len(self.data))], self.nbLines)
-        self.results['max'] = numpy.max(self.data)
-        self.results['min'] = numpy.min(self.data)
-        self.results['momentsR'] = self.moments(self.data, [1 for i in range(len(self.data))], 4)
-        self.results['centralMomentsR'] = self.moments([(i - self.results['arithAvg']) for i in self.data],
-                                                       [1 for i in range(len(self.data))], 4)
-        self.results['std'] = self.average([abs(i - self.results['arithAvg']) for i in self.data], self.nbLines)
-        self.coefficients()
-
-
-class GroupedContinuous(Calculator):
-    """Class for grouped continuous values treatment"""
-
-    def __init__(self, s, l, h, e):
-        """
-        Class constructor
-        :param s: The sum of all the occurrences. Used to calculated the average.
-        :param l: The list of the lower bound for each line
-        :param h: The list of the higher bound for each line
-        :param e: The list containing the number of occurrences for each line
-        :return: None
-        """
-        Calculator.__init__(self)
-        self.totalOccurrences = s
-        self.lowerBounds = l
-        self.higherBounds = h
-        self.centers = [(self.lowerBounds[i] + self.higherBounds[i]) / 2 for i in range(len(self.lowerBounds))]
-        self.occurrences = e
-        self.run()
-
-    def run(self):
-        """
-        This method runs the different operations in order to calculate the
-        different coefficients of the grouped set of continuous data.
-        :return : None
-        """
-        self.results['arithAvg'] = self.average(
-            [self.centers[i] * self.occurrences[i] for i in range(len(self.centers))],
-            sum(self.occurrences))
-        self.results['quadAvg'] = math.sqrt(
-            self.average([(self.centers[i] * self.centers[i]) * self.occurrences[i] for i in range(len(self.centers))],
-                         self.totalOccurrences))
-
-        self.results['geoAvg'] = math.exp(
-            self.average([numpy.log(self.centers[i]) * self.occurrences[i] for i in range(len(self.centers))],
-                         self.totalOccurrences))
-        self.results['harmAvg'] = 1 / self.average(
-            [(self.occurrences[i] / self.centers[i]) for i in range(len(self.centers))],
-            self.totalOccurrences)
-        self.results['max'] = numpy.max(self.centers)
-        self.results['min'] = numpy.min(self.centers)
-        self.results['momentsR'] = self.moments(self.centers, self.occurrences, 4)
-        self.results['centralMomentsR'] = self.moments([(i - self.results['arithAvg']) for i in self.centers],
-                                                       self.occurrences, 4)
-        self.results['std'] = self.average(
-            [self.occurrences[i] * abs(self.centers[i] - self.results['arithAvg']) for i in range(len(self.centers))],
-            self.totalOccurrences)
-        self.coefficients()
+        os.system("rm temp.*")

@@ -13,6 +13,7 @@ import math
 
 
 def Lecture_data(Nom_fichier):
+    return_list = []
     with open(Nom_fichier, 'r') as fichier:
         data_temp = fichier.readlines()
 
@@ -25,31 +26,30 @@ def Lecture_data(Nom_fichier):
 
     # fichiers a 1-colonne
     if colonne == 1:
-        x = [float(data[i]) for i in range(ligne)]
-        uns = [1 for k in range(ligne)]
-        return int(ligne), x, uns
+        x = []
+        for i in range(ligne):
+            x.append(float(data[i]))
+        return_list.append(int(ligne))
+        return_list.append(x)
 
     # fichiers a 2-colonnes
     if colonne == 2:
         x = [float(data[i][0]) for i in range(ligne)]
         Effectifs = [int(data[i][1]) for i in range(ligne)]
-
-    colonne = len(data[0])
-
-
-    # fichiers a 1-colonne
-
 
     # fichiers à 1-colonne
     if colonne == 1:
         x = [float(data[i]) for i in range(ligne)]
-        return int(ligne), x
+        return_list.append(int(ligne))
+        return_list.append(x)
 
     # fichiers a 2-colonnes
     if colonne == 2:
         x = [float(data[i][0]) for i in range(ligne)]
         Effectifs = [int(data[i][1]) for i in range(ligne)]
-        return int(numpy.sum(Effectifs)), x, Effectifs
+        return_list.append(int(numpy.sum(Effectifs)))
+        return_list.append(x)
+        return_list.append(Effectifs)
 
     # fichiers a 3-colonnes
     if colonne == 3:
@@ -57,4 +57,9 @@ def Lecture_data(Nom_fichier):
         x_d = [float(data[i][1]) for i in range(ligne)]
         Effectifs = [int(data[i][2]) for i in range(ligne)]
         moyenne_inter = [(x_g[i] + x_d[i]) / 2 for i in range(len(x_g))]
-        return int(numpy.sum(Effectifs)), x_g, x_d, Effectifs
+        return_list.append(int(numpy.sum(Effectifs)))
+        return_list.append(x_g)
+        return_list.append(x_d)
+        return_list.append(Effectifs)
+
+    return return_list
