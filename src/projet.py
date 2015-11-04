@@ -6,7 +6,6 @@
 import data_treatment
 import input_reading
 
-
 #TODO : Afficher nombre de donnees dans le fichier pdf
 
 if __name__ == '__main__':

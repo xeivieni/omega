@@ -9,7 +9,6 @@ import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 
 
-
 class Calculator(object):
     """
     Class computing the operations
@@ -135,14 +134,14 @@ class Calculator(object):
 
     def histogram(self):
         print "longueures egales ?", len(self.occurrences) == len(self.data)
-        n, bins, patches = plt.hist(self.data)
+        n, bins, patches = plt.hist(self.data, bins=20, normed=True)
         print n, bins, patches
         #plt.plot(bins, 'r--')
         plt.xlabel("Observations")
         plt.ylabel("Effectifs")
         plt.title("Histogramme")
         #fig = plt.savefig()
-        #plt.show()
+        plt.show()
 
     def generate_latex(self):
         tex_content = tex_generator.TEMPLATE.format(d=self.results, m1=self.results['momentsR'][0],

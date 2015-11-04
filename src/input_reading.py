@@ -8,7 +8,6 @@ import os
 import numpy
 import math
 
-
 ### sous fonction pour lire differents type de fichiers de donnees
 
 
