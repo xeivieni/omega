@@ -20,5 +20,4 @@ if __name__ == '__main__':
         data_set = data_treatment.Calculator(n=s[0], dl=s[1], dr=s[2], o=s[3])
     else:
         data_set = data_treatment.Calculator(n=s[0], d=s[1])
-    #data_set.display_results()
-    #data_set.generate_latex()
+

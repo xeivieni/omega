@@ -4,6 +4,7 @@
 import os
 import numpy
 import math
+import subprocess
 import tex_generator
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
@@ -57,8 +58,8 @@ class Calculator(object):
 
         self.calculate()
         self.coefficients()
-        self.generate_latex()
         self.histogram()
+        self.generate_latex()
 
     def calculate(self):
         """
@@ -66,19 +67,22 @@ class Calculator(object):
         different coefficients of the grouped set of discrete data.
         :return : None
         """
+        self.results['max'] = numpy.max(self.data)
+        self.results['min'] = numpy.min(self.data)
         self.results['arithAvg'] = self.average([self.data[i] * self.occurrences[i] for i in range(len(self.data))],
                                                 self.totalOccurrences)
         self.results['quadAvg'] = math.sqrt(
             self.average([(self.data[i] * self.data[i]) * self.occurrences[i] for i in range(len(self.data))],
                          self.totalOccurrences))
-        self.results['geoAvg'] = math.exp(
-            self.average([numpy.log(self.data[i]) * self.occurrences[i] for i in range(len(self.data))],
-                         self.totalOccurrences))
-        self.results['harmAvg'] = 1 / self.average(
-            [(self.occurrences[i] / self.data[i]) for i in range(len(self.data))],
-            self.totalOccurrences)
-        self.results['max'] = numpy.max(self.data)
-        self.results['min'] = numpy.min(self.data)
+        if self.results['min'] > 0:
+            self.results['geoAvg'] = math.exp(
+                self.average([numpy.log(self.data[i]) * self.occurrences[i] for i in range(len(self.data))],
+                             self.totalOccurrences))
+            self.results['harmAvg'] = 1 / self.average(
+                [(self.occurrences[i] / self.data[i]) for i in range(len(self.data))],
+                self.totalOccurrences)
+        else:
+            self.results['geoAvg'] = self.results['harmAvg'] = "N/A"
         self.results['momentsR'] = self.moments(self.data, self.occurrences, 4)
         self.results['centralMomentsR'] = self.moments([(i - self.results['arithAvg']) for i in self.data],
                                                        self.occurrences, 4)
@@ -133,17 +137,15 @@ class Calculator(object):
             self.results['flattening'] = (self.results['centralMomentsR'][3] / (self.results['var'] ** 4)) - 3
 
     def histogram(self):
-        print "longueures egales ?", len(self.occurrences) == len(self.data)
         n, bins, patches = plt.hist(self.data, bins=20, normed=True)
-        print n, bins, patches
-        #plt.plot(bins, 'r--')
         plt.xlabel("Observations")
         plt.ylabel("Effectifs")
         plt.title("Histogramme")
-        #fig = plt.savefig()
-        plt.show()
+        plt.savefig("histo.png")
+        #plt.show()
 
     def generate_latex(self):
+        print("generating pdf and html files")
         tex_content = tex_generator.TEMPLATE.format(d=self.results, m1=self.results['momentsR'][0],
                                                     m2=self.results['momentsR'][1],
                                                     m3=self.results['momentsR'][2],
@@ -151,13 +153,18 @@ class Calculator(object):
                                                     c1=self.results['centralMomentsR'][0],
                                                     c2=self.results['centralMomentsR'][1],
                                                     c3=self.results['centralMomentsR'][2],
-                                                    c4=self.results['centralMomentsR'][3])
+                                                    c4=self.results['centralMomentsR'][3],
+                                                    nb_obs=self.totalOccurrences)
         with open("temp.tex", 'w') as tex_file:
             tex_file.write(tex_content)
 
-        os.system("pdflatex temp.tex")
-        os.system("htlatex temp.tex")
-        os.system("mv temp.pdf ../report/report.pdf")
-        os.system("mv temp.html ../report/report.html")
-        os.system("mv temp.tex ../report/report.tex")
-        os.system("rm temp.*")
+        with open("/dev/null", 'w') as devnull:
+            subprocess.call(["pdflatex", "temp.tex"], stdout=devnull)
+            subprocess.call(["htlatex", "temp.tex"], stdout=devnull)
+            if not os.path.exists('../report'):
+                subprocess.call(["mkdir", "../report"])
+            subprocess.call(["mv", "temp.pdf", "../report/report.pdf"])
+            subprocess.call(["mv", "temp.html", "../report/report.html"])
+            subprocess.call(["mv", "temp.tex", "../report/report.tex"])
+            subprocess.call(["mv", "histo.png", "../report/"])
+            os.system("rm temp.*")

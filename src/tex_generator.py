@@ -10,6 +10,7 @@ TEMPLATE = r"""
 \usepackage[francais]{{babel}}
 \usepackage[latin1]{{inputenc}}
 \usepackage[T1]{{fontenc}}
+\usepackage{{graphicx}}
 
 \begin{{document}}
 \begin{{titlepage}}
@@ -34,10 +35,12 @@ M. Dariush \textsc{{Ghorbanzadeh}}
 \section{{Table de r\'esultats}}
 
 \bigskip
-\noindent {{\bf Ci dessous les diff\'erents r\'esultats caract\'erisant la suite de donn\'ees }}\\
+\noindent {{\bf Ci dessous les diff\'erents r\'esultats caract\'erisant la suite de donn\'ees }}\\ \\
 \renewcommand{{\array}}{{2}} % hauteur des cellules du tableau
 \begin{{tabular}}{{|l|l|}}
-  \hline \hline
+  \hline
+   Nombre observations          &  {nb_obs} \\
+  \hline
   \multicolumn{{2}}{{c}}{{Moyennes : }} \\
   \hline
   Arithm\'etique          &  {d[arithAvg]} \\
@@ -86,6 +89,8 @@ M. Dariush \textsc{{Ghorbanzadeh}}
 
 
 \section{{Histogrammes}}
+
+\includegraphics{{histo.png}}
 
 \end{{document}}
 """
