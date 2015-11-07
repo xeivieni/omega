@@ -32,11 +32,12 @@ M. Dariush \textsc{{Ghorbanzadeh}}
 {{\large \today\par}}
 \end{{titlepage}}
 
-\section{{Table de r\'esultats}}
+\chapter{{Table de r\'esultats}}
 
 \bigskip
 \noindent {{\bf Ci dessous les diff\'erents r\'esultats caract\'erisant la suite de donn\'ees }}\\ \\
 \renewcommand{{\array}}{{2}} % hauteur des cellules du tableau
+\begin{{center}}
 \begin{{tabular}}{{|l|l|}}
   \hline
    Nombre observations          &  {nb_obs} \\
@@ -87,10 +88,12 @@ M. Dariush \textsc{{Ghorbanzadeh}}
   \hline
 \end{{tabular}}
 
+\end{{center}}
 
-\section{{Histogrammes}}
-
-\includegraphics{{histo.png}}
+\chapter{{Histogramme}}
+\begin{{center}}
+\includegraphics[width=15cm]{{histo.png}}
+\end{{center}}
 
 \end{{document}}
 """
