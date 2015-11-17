@@ -86,6 +86,8 @@ M. Dariush \textsc{{Ghorbanzadeh}}
     \hline
   Coefficient d'applatissement & {d[flattening]} \\
   \hline
+  Ecart type & {d[ecartType]} \\
+  \hline
 \end{{tabular}}
 
 \end{{center}}

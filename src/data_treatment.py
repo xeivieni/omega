@@ -9,6 +9,8 @@ import tex_generator
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 
+#TODO => Ecart type = sqrt(var)
+
 
 class Calculator(object):
     """
@@ -20,6 +22,7 @@ class Calculator(object):
         """
         Class constructor for non grouped discrete data
         """
+        self.types = ["Non groupées discrètes", "Non groupées continues", "Groupées discètes", "Groupées continues"]
         self.results = {'arithAvg': 0,
                         'quadAvg': 0,
                         'geoAvg': 0,
@@ -31,28 +34,41 @@ class Calculator(object):
                         'dissym': 0,
                         'min': 0,
                         'max': 0,
-                        'flattening': 0}
+                        'flattening': 0,
+                        'ecartType': 0}
 
         if o is None:
             self.totalOccurrences = n
             self.data = d
             self.occurrences = [1 for i in range(n)]
             if type(d[0]) is not float:
-                self.type = "Non groupées discrètes"
+                """
+                Non groupées discrètes
+                """
+                self.type = 0
             else:
-                self.type = "Non groupées continues"
+                """
+                Non groupées continues
+                """
+                self.type = 1
 
         elif dl is None and dr is None:
+            """
+            Groupées discètes
+            """
             self.totalOccurrences = n
             self.data = d
             self.occurrences = o
-            self.type = "Groupées discètes"
+            self.type = 2
 
         else:
+            """
+            Groupées continues
+            """
             self.totalOccurrences = n
             self.data = [(dl[i] + dr[i]) / 2 for i in range(len(o))]
             self.occurrences = o
-            self.type = "Groupées continues"
+            self.type = 3
             self.lowerBounds = dl
             self.higherBounds = dr
 
@@ -126,24 +142,51 @@ class Calculator(object):
         _moments = []
         for j in range(order):
             _moments.append(
-                self.average([occurrence[i] * (data[i] ** j + 1) for i in range(len(data))], len(data)))
+                self.average([occurrence[i] * (data[i] ** (j + 1)) for i in range(len(data))], len(data)))
         return _moments
 
     def coefficients(self):
         if len(self.results['centralMomentsR']) > 2:
-            self.results['var'] = math.sqrt(
-                self.results['centralMomentsR'][1])  # Variance is the square root of the central moment of order 2
+            self.results['var'] = self.results['centralMomentsR'][1]  # Variance is the central moment of order 2
             self.results['dissym'] = self.results['centralMomentsR'][2] / (self.results['var'] ** 3)
             self.results['flattening'] = (self.results['centralMomentsR'][3] / (self.results['var'] ** 4)) - 3
+            self.results['ecartType'] = numpy.sqrt(self.results['var'])
 
     def histogram(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+        ax.xaxis.set_ticks_position('bottom')
+        ax.yaxis.set_ticks_position('left')
+
+        plt.bar(self.data, self.occurrences)
+        plt.hold(True)
+
+        for i in range(len(self.data)):
+            ax.text(self.data[i], self.occurrences[i]+0.09, '%d' % (self.occurrences[i]),
+                    horizontalalignment='center',
+                    verticalalignment='center', fontsize=12)
+
+        plt.ylim([0, numpy.max(self.occurrences)+0.5])
+        plt.xlim([numpy.min(self.data)-0.4, numpy.max(self.data)+0.4])
+        plt.xticks([k for k in self.data])
+        plt.xticks([])
+        plt.ylabel('Effectifs', size=16)
+        plt.xlabel('Valeurs', size=16)
+
+        plt.savefig("histo.png")
+
+
+
+        """
         n, bins, patches = plt.hist(self.data, bins=20, normed=True)
         plt.xlabel("Observations")
         plt.ylabel("Effectifs")
         plt.title("Histogramme")
         plt.savefig("histo.png")
-        #plt.show()
-
+        """
     def generate_latex(self):
         print("generating pdf and html files")
         tex_content = tex_generator.TEMPLATE.format(d=self.results, m1=self.results['momentsR'][0],
