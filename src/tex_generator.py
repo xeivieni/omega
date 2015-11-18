@@ -92,10 +92,8 @@ M. Dariush \textsc{{Ghorbanzadeh}}
 
 \end{{center}}
 
-\chapter{{Histogramme}}
-\begin{{center}}
+\chapter{{Histogramme des donn\'ees {type} }}
 \includegraphics[width=15cm]{{histo.png}}
-\end{{center}}
 
 \end{{document}}
 """

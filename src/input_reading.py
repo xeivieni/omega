@@ -17,10 +17,6 @@ def Lecture_data(Nom_fichier):
         data_temp = fichier.readlines()
 
     data = [line.split() for line in data_temp]
-    if data[0][0].__contains__('.'):
-        type = 0  # will help determining if data is continuous or discrete
-    else:
-        type = 1
     data = numpy.asfarray(data)
 
     ligne = len(data)  # nombre de donnees
@@ -29,10 +25,7 @@ def Lecture_data(Nom_fichier):
 
     # fichiers à 1-colonne
     if colonne == 1:
-        if type == 0:
-            x = [float(data[i]) for i in range(ligne)]
-        else:
-            x = [float(data[i]) for i in range(ligne)]
+        x = [float(data[i]) for i in range(ligne)]
         return_list.append(int(ligne))
         return_list.append(x)
 

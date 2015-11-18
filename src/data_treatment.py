@@ -22,7 +22,7 @@ class Calculator(object):
         """
         Class constructor for non grouped discrete data
         """
-        self.types = ["Non groupées discrètes", "Non groupées continues", "Groupées discètes", "Groupées continues"]
+        self.types = ["non groupées discr\\'etes", "non group\\'ees continues", "group\\'ees disc\`etes", "group\\'ees continues"]
         self.results = {'arithAvg': 0,
                         'quadAvg': 0,
                         'geoAvg': 0,
@@ -41,7 +41,7 @@ class Calculator(object):
             self.totalOccurrences = n
             self.data = d
             self.occurrences = [1 for i in range(n)]
-            if type(d[0]) is not float:
+            if d[0].is_integer():
                 """
                 Non groupées discrètes
                 """
@@ -53,13 +53,22 @@ class Calculator(object):
                 self.type = 1
 
         elif dl is None and dr is None:
-            """
-            Groupées discètes
-            """
-            self.totalOccurrences = n
-            self.data = d
-            self.occurrences = o
-            self.type = 2
+            if d[0].is_integer():
+                """
+                Groupées discètes
+                """
+                self.totalOccurrences = n
+                self.data = d
+                self.occurrences = o
+                self.type = 2
+            else:
+                """
+                Groupées continues
+                """
+                self.totalOccurrences = n
+                self.data = d
+                self.occurrences = o
+                self.type = 3
 
         else:
             """
@@ -72,6 +81,7 @@ class Calculator(object):
             self.lowerBounds = dl
             self.higherBounds = dr
 
+        print self.types[self.type]
         self.calculate()
         self.coefficients()
         self.histogram()
@@ -85,6 +95,8 @@ class Calculator(object):
         """
         self.results['max'] = numpy.max(self.data)
         self.results['min'] = numpy.min(self.data)
+        if self.type == 0:
+            self.group_data()
         self.results['arithAvg'] = self.average([self.data[i] * self.occurrences[i] for i in range(len(self.data))],
                                                 self.totalOccurrences)
         self.results['quadAvg'] = math.sqrt(
@@ -125,7 +137,8 @@ class Calculator(object):
         print "Dissymetrie : ", self.results['dissym']
         print "Coefficient d'applatissement : ", self.results['flattening']
 
-    def average(self, data, number=None):
+    @staticmethod
+    def average(data, number=None):
         """
         Average function (used for almost every calculations.
         This function is useful for our project because it can compute an average on a list and dividing by a specified
@@ -165,14 +178,14 @@ class Calculator(object):
         plt.hold(True)
 
         for i in range(len(self.data)):
-            ax.text(self.data[i], self.occurrences[i]+0.09, '%d' % (self.occurrences[i]),
+            ax.text(self.data[i], self.occurrences[i]+0.1, '%d' % (self.occurrences[i]),
                     horizontalalignment='center',
                     verticalalignment='center', fontsize=12)
 
         plt.ylim([0, numpy.max(self.occurrences)+0.5])
-        plt.xlim([numpy.min(self.data)-0.4, numpy.max(self.data)+0.4])
+        plt.xlim([numpy.min(self.data)-0.2, numpy.max(self.data)+0.2])
         plt.xticks([k for k in self.data])
-        plt.xticks([])
+        plt.yticks([])
         plt.ylabel('Effectifs', size=16)
         plt.xlabel('Valeurs', size=16)
 
@@ -197,7 +210,7 @@ class Calculator(object):
                                                     c2=self.results['centralMomentsR'][1],
                                                     c3=self.results['centralMomentsR'][2],
                                                     c4=self.results['centralMomentsR'][3],
-                                                    nb_obs=self.totalOccurrences)
+                                                    nb_obs=self.totalOccurrences, type=self.types[self.type])
         with open("temp.tex", 'w') as tex_file:
             tex_file.write(tex_content)
 
@@ -211,3 +224,20 @@ class Calculator(object):
             subprocess.call(["mv", "temp.tex", "../report/report.tex"])
             subprocess.call(["mv", "histo.png", "../report/"])
             os.system("rm temp.*")
+
+    def group_data(self):
+        d = []
+        o = []
+        for i in range(int(self.results['min']), int(self.results['max']), 1):
+            d.append(i)
+            o.append(self.data.count(i))
+        self.data = d
+        self.occurrences = o
+        print self.data
+        print self.occurrences
+
+
+
+
+
+
