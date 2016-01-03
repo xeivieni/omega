@@ -22,7 +22,7 @@ class Calculator(object):
         """
         Class constructor for non grouped discrete data
         """
-        self.types = ["non groupées discr\\'etes", "non group\\'ees continues", "group\\'ees disc\`etes", "group\\'ees continues"]
+        self.types = ["non group\\'ees discr\\`etes", "non group\\'ees continues", "group\\'ees disc\\`etes", "group\\'ees continues"]
         self.results = {'arithAvg': 0,
                         'quadAvg': 0,
                         'geoAvg': 0,
@@ -81,7 +81,6 @@ class Calculator(object):
             self.lowerBounds = dl
             self.higherBounds = dr
 
-        print self.types[self.type]
         self.calculate()
         self.coefficients()
         self.histogram()
@@ -136,6 +135,7 @@ class Calculator(object):
         print "Moments centrés d'ordre R (jusqu'a 4) : ", self.results['centralMomentsR']
         print "Dissymetrie : ", self.results['dissym']
         print "Coefficient d'applatissement : ", self.results['flattening']
+        print "Ecart type : ", self.results['ecartType']
 
     @staticmethod
     def average(data, number=None):
@@ -167,6 +167,7 @@ class Calculator(object):
 
     def histogram(self):
         fig = plt.figure()
+        plt.gcf().subplots_adjust(bottom=0.15)  # continuous non groupped specific
         ax = fig.add_subplot(111)
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
@@ -174,10 +175,10 @@ class Calculator(object):
         ax.xaxis.set_ticks_position('bottom')
         ax.yaxis.set_ticks_position('left')
 
-        plt.bar(self.data, self.occurrences)
         plt.hold(True)
 
         for i in range(len(self.data)):
+            plt.bar(self.data[i], self.occurrences[i])
             ax.text(self.data[i], self.occurrences[i]+0.1, '%d' % (self.occurrences[i]),
                     horizontalalignment='center',
                     verticalalignment='center', fontsize=12)
@@ -190,8 +191,6 @@ class Calculator(object):
         plt.xlabel('Valeurs', size=16)
 
         plt.savefig("histo.png")
-
-
 
         """
         n, bins, patches = plt.hist(self.data, bins=20, normed=True)
