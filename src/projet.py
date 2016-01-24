@@ -32,6 +32,7 @@ def Normale_Rup_Estim(data):
     n = len(data)
     V = [0] * len(data)  # La vraisemblance en fonction de k
     c = [0] * len(data)
+    R = [0] * len(data)
     sigma = [0] * len(data)
     diff = [0] * len(data)
 
@@ -54,12 +55,14 @@ def Normale_Rup_Estim(data):
                 (n - i) / 2) * math.log(float(c_carre[i])) - float(1 / (2 * sigma_carre[i])) * float(
                 numpy.sum((diff_carre[:i]))) - float(1 / (2 * c_carre[i] * sigma_carre[i])) * float(
                 numpy.sum((diff_carre[i + 1:n]))))
+        R[i] = float(i)/float(n) * float(1-float(i)/float(n)) * V[i]
 
-    k = numpy.argmax(V)  # l'indice max du Vraisemblance
+    k = numpy.argmax(R)  # l'indice max du Vraisemblance
     c_estim = c_carre[k]
-    sigma_estim = sigma[k]
+    sigma1_estim = sigma[k]
+    sigma2_estim = sigma[k]*c[k]
 
-    return k, mu, c_estim, sigma_estim
+    return k, mu, sigma1_estim, sigma2_estim
 
 
 if __name__ == '__main__':
@@ -73,8 +76,8 @@ if __name__ == '__main__':
 
     fichier_k = open('Estimateur_k.dat', 'w')
     fichier_mu = open('mu.dat', 'w')
-    fichier_c = open('c.dat', 'w')
-    fichier_sigma = open('sigma.dat', 'w')
+    fichier_c = open('sigma1.dat', 'w')
+    fichier_sigma = open('sigma2.dat', 'w')
 
     M = 200
     for i in range(M):
