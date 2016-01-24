@@ -86,6 +86,12 @@ class Calculator(object):
         self.histogram()
         self.generate_latex()
 
+        X = self.Normale_Rup(10, 7, 2, 50, 100)
+        #print X
+        Y = self.Normale_Rup_Estim(X)
+        #print Y
+
+
     def calculate(self):
         """
         This method runs the different operations in order to calculate the
@@ -234,9 +240,5 @@ class Calculator(object):
         self.occurrences = o
         print self.data
         print self.occurrences
-
-
-
-
 
 
