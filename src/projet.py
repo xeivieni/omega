@@ -68,10 +68,10 @@ def Normale_Rup_Estim(data):
 
 if __name__ == '__main__':
 
-    answer = raw_input("Voulez-vous effectuer une simulation ? (Y/N) : ")
-    if answer == "Y":
+    answer = raw_input("Entrez S pour effectuer une simulation ? Appuyez sur n'importe quelle touche pour lire un fichier : ")
+    if (answer == "S") or (answer == "s"):
 
-        print "Veuillez entrer les paramètres"
+        print "Veuillez entrer les paramètres..."
         mu = float(raw_input("mu : "))
         sigma21 = float(raw_input("sigma 1 : "))
         sigma22 = float(raw_input("sigma 2 : "))

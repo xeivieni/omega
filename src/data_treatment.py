@@ -92,12 +92,10 @@ class Calculator(object):
         """
         self.results['max'] = numpy.max(self.data)
         self.results['min'] = numpy.min(self.data)
-        print sum(self.occurrences)
         if self.type == 0:
             self.group_discrete_data()
         if self.type == 1:
             self.group_continuous_data()
-        print sum(self.occurrences)
 
         self.results['arithAvg'] = self.average([self.data[i] * self.occurrences[i] for i in range(len(self.data))],
                                                 self.totalOccurrences)
@@ -237,14 +235,18 @@ class Calculator(object):
         d.append(0)
         l.append(self.results['min'])
         r.append(self.results['min'] + ((self.results['max']-self.results['min'])/nb_groups))
-        for i in range(1, nb_groups):
+        for i in range(1, nb_groups-1):
             l.append(l[i-1] + ((self.results['max']-self.results['min'])/nb_groups))
             r.append(r[i-1] + ((self.results['max']-self.results['min'])/nb_groups))
             d.append(0)
 
+        l.append(l[i-1] + ((self.results['max']-self.results['min'])/nb_groups))
+        r.append(self.results['max'])
+        d.append(0)
+
         for i in self.data:
             for j in range(len(l)):
-                if (i >= l[j]) and (i < r[j]):
+                if (i >= l[j]) and (i <= r[j]):
                     d[j] += 1
                     break
 
