@@ -6,7 +6,6 @@ import numpy
 import math
 import subprocess
 import tex_generator
-import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 
 
@@ -93,8 +92,13 @@ class Calculator(object):
         """
         self.results['max'] = numpy.max(self.data)
         self.results['min'] = numpy.min(self.data)
+        print sum(self.occurrences)
         if self.type == 0:
-            self.group_data()
+            self.group_discrete_data()
+        if self.type == 1:
+            self.group_continuous_data()
+        print sum(self.occurrences)
+
         self.results['arithAvg'] = self.average([self.data[i] * self.occurrences[i] for i in range(len(self.data))],
                                                 self.totalOccurrences)
         self.results['quadAvg'] = math.sqrt(
@@ -154,7 +158,7 @@ class Calculator(object):
         _moments = []
         for j in range(order):
             _moments.append(
-                    self.average([occurrence[i] * (data[i] ** (j + 1)) for i in range(len(data))], len(data)))
+                    self.average([self.occurrences[i] * (self.data[i] ** (j + 1)) for i in range(len(data))], sum(occurrence)))
         return _moments
 
     def coefficients(self):
@@ -215,34 +219,36 @@ class Calculator(object):
             subprocess.call(["mv", "histo.png", "../report/"])
             os.system("rm temp.*")
 
-    def group_data(self):
+    def group_discrete_data(self):
         d = []
         o = []
-        for i in range(int(self.results['min']), int(self.results['max']), 1):
+        for i in range(int(self.results['min']), int(self.results['max'])+1, 1):
             d.append(i)
             o.append(self.data.count(i))
         self.data = d
         self.occurrences = o
 
+    def group_continuous_data(self):
+        d = []
+        l = []
+        r = []
 
-"""
-<<<<<<< Updated upstream
+        nb_groups = int(raw_input("Données continues non groupées détectées, combien de groupes voulez vous faire ? : "))
+        d.append(0)
+        l.append(self.results['min'])
+        r.append(self.results['min'] + ((self.results['max']-self.results['min'])/nb_groups))
+        for i in range(1, nb_groups):
+            l.append(l[i-1] + ((self.results['max']-self.results['min'])/nb_groups))
+            r.append(r[i-1] + ((self.results['max']-self.results['min'])/nb_groups))
+            d.append(0)
 
+        for i in self.data:
+            for j in range(len(l)):
+                if (i >= l[j]) and (i < r[j]):
+                    d[j] += 1
+                    break
 
-=======
-    def estimation(self):
-        k = 0
-        Sh = 0
-        Shc = 0
-        Ac =
-        Bc = (- self.totalOccurrences - k)/2
-        c = - Ac / Bc
-        As =
-        Bs = - self.totalOccurrences/2
-        sigma = - As / Bs
-        Sh = sum(self.data[:k])
-        Shc = sum(self.data[k+1:])
-        mu = ((-Sh / (sigma ** 2)) - (Shc / (c ** 2 * sigma ** 2))) / (
-             (-k / sigma ** 2) - ((n - k) / c ** 2 * sigma ** 2))
->>>>>>> Stashed changes
-"""
+        self.data = [(l[i] + r[i]) / 2 for i in range(len(l))]
+        self.occurrences = d
+        self.higherBounds = r
+        self.lowerBounds = l

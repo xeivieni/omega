@@ -65,37 +65,45 @@ def Normale_Rup_Estim(data):
     return k, mu, sigma1_estim, sigma2_estim
 
 
+
 if __name__ == '__main__':
 
-    print "Veuillez entrer les paramètres"
-    mu = float(raw_input("mu : "))
-    sigma21 = float(raw_input("sigma 1 : "))
-    sigma22 = float(raw_input("sigma 2 : "))
-    k = int(raw_input("k : "))
-    n = int(raw_input("n : "))
+    answer = raw_input("Voulez-vous effectuer une simulation ? (Y/N) : ")
+    if answer == "Y":
 
-    fichier_k = open('Estimateur_k.dat', 'w')
-    fichier_mu = open('mu.dat', 'w')
-    fichier_c = open('sigma1.dat', 'w')
-    fichier_sigma = open('sigma2.dat', 'w')
+        print "Veuillez entrer les paramètres"
+        mu = float(raw_input("mu : "))
+        sigma21 = float(raw_input("sigma 1 : "))
+        sigma22 = float(raw_input("sigma 2 : "))
+        k = int(raw_input("k : "))
+        n = int(raw_input("n : "))
 
-    M = 200
-    for i in range(M):
-        X = Normale_Rup(mu, sigma21, sigma22, k, n)
+        fichier_k = open('Estimateur_k.dat', 'w')
+        fichier_mu = open('mu.dat', 'w')
+        fichier_c = open('sigma1.dat', 'w')
+        fichier_sigma = open('sigma2.dat', 'w')
 
-        Y = Normale_Rup_Estim(X)
+        M = 200
+        for i in range(M):
+            X = Normale_Rup(mu, sigma21, sigma22, k, n)
 
-        fichier_k.write("%d\n" % Y[0])
-        fichier_mu.write("%0.4f\n" % Y[1])
-        fichier_c.write("%0.4f\n" % Y[2])
-        fichier_sigma.write("%0.4f\n" % Y[3])
+            Y = Normale_Rup_Estim(X)
 
-    fichier_k.close()
-    fichier_mu.close()
-    fichier_c.close()
-    fichier_sigma.close()
+            fichier_k.write("%d\n" % Y[0])
+            fichier_mu.write("%0.4f\n" % Y[1])
+            fichier_c.write("%0.4f\n" % Y[2])
+            fichier_sigma.write("%0.4f\n" % Y[3])
 
-    s = input_reading.Lecture_data("Estimateur_k.dat")
+        fichier_k.close()
+        fichier_mu.close()
+        fichier_c.close()
+        fichier_sigma.close()
+        s = input_reading.Lecture_data("mu.dat")
+
+    else:
+        input_file = raw_input('Glissez déposez le fichier a tester et appuyez sur entrée (format .dat) : ')
+        s = input_reading.Lecture_data(input_file)
+
     if len(s) == 3:
         data_set = data_treatment.Calculator(n=s[0], d=s[1], o=s[2])
     elif len(s) == 4:
