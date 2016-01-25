@@ -156,7 +156,7 @@ class Calculator(object):
         _moments = []
         for j in range(order):
             _moments.append(
-                    self.average([self.occurrences[i] * (self.data[i] ** (j + 1)) for i in range(len(data))], sum(occurrence)))
+                    self.average([occurrence[i] * (data[i] ** (j + 1)) for i in range(len(data))], sum(occurrence)))
         return _moments
 
     def coefficients(self):
