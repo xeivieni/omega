@@ -23,4 +23,4 @@ These files contains the same data :
 
 ##Known issues:
 
--Still some issues with the histogram display
+- Still some issues with the histogram display
